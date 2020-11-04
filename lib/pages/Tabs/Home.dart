@@ -1,14 +1,15 @@
 import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:frefresh/frefresh.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tang_ping/pages/Search/Search.dart';
+import 'package:tang_ping/Widgets/SearchBox.dart';
 import 'package:tang_ping/utils/AnimationRoute.dart';
+import 'package:tang_ping/utils/Http.dart';
 import 'package:tang_ping/utils/PlaceHolderImg_page.dart';
 import 'package:tang_ping/utils/PreviewImg.dart';
 import 'package:tang_ping/utils/TextColor.dart';
@@ -48,15 +49,9 @@ class _HomePageState extends State<HomePage> {
 
   var _imgPath;
   /*拍照*/
-  _takePhoto() async {
-    var image = await ImagePicker().getImage(source: ImageSource.camera);
-    setState(() {
-      _imgPath = image;
-    });
-  }
 
   /*相册*/
-  _openGallery() async {
+  void _openGallery() async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
       _imgPath = image;
@@ -77,14 +72,15 @@ class _HomePageState extends State<HomePage> {
   void _getCosList(
     int numb,
   ) async {
-    var res = await Dio().get(
+    var res = await HttpUtil().get(
         'https://api.vc.bilibili.com/link_draw/v2/Photo/list?category=cos&type=hot&page_num=$numb&page_size=8');
-    print("res $res");
-    setState(() {
-      _defaultCosList.addAll(res.data['data']['items']);
-      _isLoad = false;
-      // _getLikeCos();
-    });
+    if (res['code'] == 0) {
+      setState(() {
+        _defaultCosList.addAll(res['data']['items']);
+        _isLoad = false;
+        // _getLikeCos();
+      });
+    }
   }
 
   // void _getLikeCos() async {
@@ -174,52 +170,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ));
       },
-    );
-  }
-
-  Widget _buildSearch() {
-    return Container(
-      margin: EdgeInsets.only(bottom: 15),
-      padding: EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Color.fromRGBO(200, 200, 200, .2),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () {
-                  Navigator.push(context, SlideTransitionRoute(SearchPage()));
-                },
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      color: Colors.black38,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      '搜索',
-                      style: TextStyle(color: Colors.black38),
-                    )
-                  ],
-                )),
-          ),
-          GestureDetector(
-            onTap: _takePhoto,
-            child: Icon(
-              Icons.camera,
-              color: Colors.black38,
-            ),
-          )
-        ],
-      ),
     );
   }
 
@@ -397,15 +347,21 @@ class _HomePageState extends State<HomePage> {
               Container(
                   constraints: BoxConstraints(
                       maxHeight: MediaQuery.of(context).size.height / 1.5),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(5),
-                    child: ImageWidgetPlaceholder(
-                      imgUrl: '${item['pictures'][0]['img_src']}',
-                      placeHolder: Container(
-                        color: Color.fromRGBO(Random().nextInt(255),
-                            Random().nextInt(255), Random().nextInt(255), .7),
-                      ),
-                    ),
+                  child: Swiper(
+                    loop: false,
+                    itemCount: item['pictures'].length,
+                    control: SwiperControl(color: Colors.white),
+                    onIndexChanged: (i) {},
+                    itemBuilder: (context, index) {
+                      return ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: ImageWidgetPlaceholder(
+                            imgUrl: '${item['pictures'][index]['img_src']}',
+                            placeHolder: Container(
+                              color: Colors.black12,
+                            ),
+                          ));
+                    },
                   )),
               SizedBox(
                 height: 15,
@@ -483,7 +439,7 @@ class _HomePageState extends State<HomePage> {
       child: Padding(
           padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
           child: Column(
-            children: [_buildSearch(), _buildGradList()],
+            children: [buildSearchBox(context: context), _buildGradList()],
           )),
     );
   }
@@ -523,7 +479,7 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
             child: Column(
               children: [
-                _buildSearch(),
+                buildSearchBox(context: context),
                 _defaultCosList.length > 0
                     ? _buildColumnList()
                     : Center(

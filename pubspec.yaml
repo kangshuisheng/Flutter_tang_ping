@@ -39,6 +39,7 @@ dependencies:
   frefresh: ^1.1.0
   flutter_swiper: ^1.1.6
   shared_preferences: ^0.5.3+4
+  animator: ^2.0.1
 
 dev_dependencies:
   flutter_test:

@@ -12,7 +12,6 @@ class _CreatePageState extends State<CreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -30,19 +29,39 @@ class _CreatePageState extends State<CreatePage> {
               children: [
                 GestureDetector(
                   child: Column(
-                    children: [Icon(Icons.image), Text('发文章')],
+                    children: [
+                      Icon(
+                        Icons.image,
+                        color: TextColor.textSecondaryColor,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        '发文章',
+                        style: TextStyle(color: TextColor.textSecondaryColor),
+                      )
+                    ],
                   ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 GestureDetector(
                   onTap: () {},
                   child: Container(
-                    child: Text('图文'),
+                    child: Text('图文',
+                        style: TextStyle(color: TextColor.textSecondaryColor)),
                   ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 GestureDetector(
                   onTap: () {},
                   child: Container(
-                    child: Text('视频'),
+                    child: Text('视频',
+                        style: TextStyle(color: TextColor.textSecondaryColor)),
                   ),
                 )
               ],
