@@ -4,7 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:tang_ping/pages/Search/Search.dart';
 import 'package:tang_ping/utils/AnimationRoute.dart';
 
-Widget buildSearchBox({context}) {
+Widget buildSearchBox(context) {
   void _takePhoto() async {
     var image = await ImagePicker().getImage(source: ImageSource.camera);
   }

@@ -35,8 +35,8 @@ dependencies:
   # camera: ^0.5.8+11
   image_picker: ^0.6.7+12
   bot_toast: ^3.0.4
+  flutter_easyrefresh: ^2.1.6
   flutter_staggered_animations: "^0.1.2"
-  frefresh: ^1.1.0
   flutter_swiper: ^1.1.6
   shared_preferences: ^0.5.3+4
   animator: ^2.0.1

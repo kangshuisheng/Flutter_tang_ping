@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:frefresh/frefresh.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tang_ping/Widgets/AppbarTitle.dart';
 import 'package:tang_ping/Widgets/SearchBox.dart';
+import 'package:tang_ping/config.dart';
 import 'package:tang_ping/utils/AnimationRoute.dart';
 import 'package:tang_ping/utils/Http.dart';
 import 'package:tang_ping/utils/PlaceHolderImg_page.dart';
@@ -23,29 +23,20 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _getCosList(_page);
-    _controller = FRefreshController();
-    _controllerTwo = FRefreshController();
+    _getCosList(_pageNum);
+    _controller = EasyRefreshController();
   }
 
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
-    _controllerTwo.dispose();
   }
 
-  FRefreshController _controller;
-  FRefreshController _controllerTwo;
-  int _page = 0;
-  int _active = 0;
-  int _likes = 0;
-  bool _isLoad = false;
+  EasyRefreshController _controller;
+  int _pageNum = 0, _active = 0, _cosImgTotalCount = 0;
   List<String> _titleList = ['推荐', '关注'];
   List<dynamic> _defaultCosList = [];
-  List<dynamic> _likeCosList = [];
-  List<String> _likeIDList = []; //存放新添加的喜欢
-  int _last = 0;
+  // List<String> _likeIDList = []; //存放新添加的喜欢
 
   var _imgPath;
   /*拍照*/
@@ -58,17 +49,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<bool> _doubleClickBack() {
-    int now = DateTime.now().millisecondsSinceEpoch;
-    if (now - _last > 1000) {
-      BotToast.showText(text: '再按一次退出');
-      _last = DateTime.now().millisecondsSinceEpoch;
-      return Future.value(false);
-    } else {
-      return Future.value(true);
-    }
-  }
-
   void _getCosList(
     int numb,
   ) async {
@@ -77,34 +57,10 @@ class _HomePageState extends State<HomePage> {
     if (res['code'] == 0) {
       setState(() {
         _defaultCosList.addAll(res['data']['items']);
-        _isLoad = false;
-        // _getLikeCos();
+        _cosImgTotalCount = res['data']['total_count'];
       });
     }
   }
-
-  // void _getLikeCos() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   _likeIDList = prefs.getStringList('likeCos') ?? [];
-  //   _likes = _likeIDList.length;
-  //   _isLoad = false;
-  //   _defaultCosList.forEach((element) {
-  //     if (_likeIDList.firstWhere(
-  //                 (item) => item == '${element['item']['doc_id']}', orElse: () {
-  //               print('没有符合');
-  //             }) !=
-  //             null &&
-  //         _likeCosList.length < _likes) {
-  //       print('_likeIDList $_likeIDList');
-  //       setState(() {
-  //         element['item']['already_liked'] = 1;
-  //         // if () {
-  //         _likeCosList.add(element);
-  //         // }
-  //       });
-  //     }
-  //   });
-  // }
 
   void _showBottomSheet(context, {int index, Map user}) {
     showModalBottomSheet(
@@ -176,9 +132,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildTab(int i) {
     return GestureDetector(
         onTap: () {
-          // setState(() {
-          //   _active = i;
-          // });
+          setState(() {
+            _active = i;
+          });
         },
         child: Container(
             margin: EdgeInsets.only(right: 10),
@@ -194,7 +150,7 @@ class _HomePageState extends State<HomePage> {
             )));
   }
 
-  Widget _buildGradList() {
+  Widget _buildGridList() {
     return StaggeredGridView.countBuilder(
       physics: NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -407,131 +363,65 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _leftPage() {
-    return FRefresh(
-      headerHeight: 50,
-      header: Center(
-        child: Text('Loading...'),
-      ),
-      footerHeight: 50,
-      controller: _controller,
-      footer: Center(
-        child: Text('加载中...'),
-      ),
-      onRefresh: () {
-        setState(() {
-          _page = 0;
-          _defaultCosList = [];
-        });
-        _getCosList(_page);
-        _controller.finishRefresh();
-      },
-      onLoad: () async {
-        if (!_isLoad) {
-          setState(() {
-            _page++;
-            _isLoad = true;
-          });
-          _getCosList(_page);
-          _controller.finishLoad();
-        }
-      },
-      child: Padding(
-          padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-          child: Column(
-            children: [buildSearchBox(context: context), _buildGradList()],
-          )),
-    );
-  }
-
-  Widget _rightPage() {
-    return FRefresh(
-        headerHeight: 50,
-        header: Center(),
-        footerHeight: 50,
-        controller: _controllerTwo,
-        footer: Center(
-          child: Text(_likeCosList.length == _likes ? '我是有底线的' : '加载中...'),
-        ),
-        onRefresh: () {
-          setState(() {
-            _defaultCosList = [];
-          });
-          // _getLikeCos();
-          _getCosList(_page);
-          _controllerTwo.finishRefresh();
-        },
-        onLoad: () {
-          // if (_likeCosList.length == _likes) {
-          //   _controllerTwo.finishLoad();
-          //   return;
-          // }
-          if (!_isLoad) {
-            setState(() {
-              _isLoad = true;
-            });
-            // _getLikeCos();
-            _getCosList(_page);
-          }
-          _controllerTwo.finishLoad();
-        },
-        child: Padding(
-            padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
-            child: Column(
-              children: [
-                buildSearchBox(context: context),
-                _defaultCosList.length > 0
-                    ? _buildColumnList()
-                    : Center(
-                        child: Text('你没有关注任何人哦'),
-                      )
-              ],
-            )));
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
         child: Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              backgroundColor: Colors.white,
-              title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 30,
-                      height: 30,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          image: DecorationImage(
-                              image: NetworkImage(
-                                  'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1741476901,4013212021&fm=11&gp=0.jpg'))),
-                    ),
-                    Flex(
-                      direction: Axis.horizontal,
-                      children:
-                          List.generate(_titleList.length, (i) => _buildTab(i)),
-                    ),
-                    GestureDetector(
-                        onTap: () {},
-                        child: Icon(
-                          Icons.more_horiz,
-                          size: 30,
-                          color: Colors.black38,
-                        ))
-                  ]),
+          appBar: AppBar(
+            elevation: 0,
+            backgroundColor: Colors.white,
+            title: AppbarTitle(
+              widget: Flex(
+                direction: Axis.horizontal,
+                children: List.generate(_titleList.length, (i) => _buildTab(i)),
+              ),
+              callback: () {},
+              icon: Icon(
+                Icons.more_horiz,
+                size: 30,
+                color: Colors.black38,
+              ),
             ),
-            body: Container(
-                color: Colors.white,
-                child: PageView(
-                  onPageChanged: (i) async {
-                    setState(() {
-                      _active = i;
-                    });
-                  },
-                  children: [_leftPage(), _rightPage()],
-                ))),
-        onWillPop: _doubleClickBack);
+          ),
+          body: EasyRefresh(
+            enableControlFinishRefresh: false,
+            enableControlFinishLoad: true,
+            controller: _controller,
+            header: ClassicalHeader(),
+            footer: ClassicalFooter(),
+            onRefresh: () async {
+              setState(() {
+                _pageNum = 0;
+              });
+              _getCosList(0);
+              await Future.delayed(Duration(seconds: 2), () {
+                print('onRefresh');
+                _controller.resetLoadState();
+              });
+            },
+            onLoad: () async {
+              setState(() {
+                _pageNum++;
+              });
+              _getCosList(_pageNum);
+              await Future.delayed(Duration(seconds: 2), () {
+                print('onLoad');
+                _controller.finishLoad(
+                    noMore: _defaultCosList.length >= _cosImgTotalCount);
+              });
+            },
+            child: SingleChildScrollView(
+              child: Padding(
+                  padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                  child: Column(
+                    children: [
+                      buildSearchBox(context),
+                      _active == 0 ? _buildGridList() : _buildColumnList(),
+                    ],
+                  )),
+            ),
+          ),
+        ),
+        onWillPop: Config.doubleClickBack);
   }
 }

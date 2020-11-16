@@ -1,4 +1,3 @@
-import 'package:animator/animator.dart';
 import 'package:flutter/material.dart';
 import 'package:tang_ping/pages/Tabs/Circles.dart';
 import 'package:tang_ping/pages/Tabs/Create.dart';
