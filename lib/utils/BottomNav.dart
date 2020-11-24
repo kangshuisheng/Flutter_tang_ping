@@ -30,15 +30,15 @@ class BottomNavState extends State<BottomNav> {
         body: IndexedStack(index: _currentIndex, children: [
           HomePage(),
           CirclesPage(),
+          SizedBox(),
           MessagePage(),
-          Container(),
           MinePage(),
         ]),
         bottomNavigationBar: BottomAppBar(
           color: Colors.white,
           child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(5, (i) {
+              children: List.generate(_navItem.length, (i) {
                 return GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () {
@@ -55,7 +55,7 @@ class BottomNavState extends State<BottomNav> {
                       tween: Tween(
                           begin: _currentIndex == i ? 20.0 : 10.0,
                           end: _currentIndex == i ? 25.0 : 22.0),
-                      duration: Duration(milliseconds: 250),
+                      duration: Duration(milliseconds: 200),
                       builder: (context, value, child) => Container(
                         height: 50,
                         width: 50,

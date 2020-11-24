@@ -10,24 +10,37 @@ class RecommendCard extends StatelessWidget {
 
   RecommendCard(
       {Key key,
-      this.postsPreviewImgCount,
-      this.postsPreviewImgs,
-      this.topic,
-      this.circleName,
-      this.joinCircleNum})
+      @required this.postsPreviewImgCount,
+      @required this.postsPreviewImgs,
+      @required this.topic,
+      @required this.circleName,
+      @required this.joinCircleNum})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.white,
+      decoration: BoxDecoration(
+          color: Colors.white, borderRadius: BorderRadius.circular(6)),
+      padding: EdgeInsets.all(14),
+      margin: EdgeInsets.only(bottom: 14),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  Image.network(''),
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.network(
+                        'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1741476901,4013212021&fm=11&gp=0.jpg',
+                        width: 24,
+                      )),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Text(
                     circleName,
                     style: TextStyle(
@@ -42,22 +55,42 @@ class RecommendCard extends StatelessWidget {
               )
             ],
           ),
+          SizedBox(
+            height: 10,
+          ),
           Container(
-            child: Text('话题: $topic'),
+            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+            decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(6)),
+            child: Text(
+              '话题: $topic',
+              style: TextStyle(
+                  color: TextColor.textPrimaryColor, fontSize: 12, height: 1),
+            ),
+          ),
+          SizedBox(
+            height: 10,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(postsPreviewImgs.length, (index) {
               var item = postsPreviewImgs[index];
               if (index >= 3) {
-                return null;
+                return SizedBox();
               } else {
                 return ClipRRect(
                   borderRadius: BorderRadius.circular(4),
-                  child: Image.network('$item'),
+                  child: Image.network(
+                    '$item',
+                    width: 300 / 4,
+                    height: 300 / 4,
+                    fit: BoxFit.fill,
+                  ),
                 );
               }
             }),
-          )
+          ),
         ],
       ),
     );

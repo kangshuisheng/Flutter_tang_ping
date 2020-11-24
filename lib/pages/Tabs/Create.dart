@@ -39,7 +39,9 @@ class _CreatePageState extends State<CreatePage> {
                       ),
                       Text(
                         '发文章',
-                        style: TextStyle(color: TextColor.textSecondaryColor),
+                        style: TextStyle(
+                            color: TextColor.textSecondaryColor,
+                            fontWeight: FontWeight.bold),
                       )
                     ],
                   ),
@@ -51,7 +53,10 @@ class _CreatePageState extends State<CreatePage> {
                   onTap: () {},
                   child: Container(
                     child: Text('图文',
-                        style: TextStyle(color: TextColor.textSecondaryColor)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ),
                 ),
                 SizedBox(
@@ -61,7 +66,10 @@ class _CreatePageState extends State<CreatePage> {
                   onTap: () {},
                   child: Container(
                     child: Text('视频',
-                        style: TextStyle(color: TextColor.textSecondaryColor)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ),
                 )
               ],

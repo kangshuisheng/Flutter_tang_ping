@@ -1,8 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:tang_ping/Widgets/AppbarTitle.dart';
+import 'package:tang_ping/Widgets/RecommendCard.dart';
 import 'package:tang_ping/Widgets/SearchBox.dart';
+import 'package:tang_ping/config.dart';
 import 'package:tang_ping/utils/TextColor.dart';
+import 'package:tang_ping/utils/TextStyleTransition.dart';
 
 class CirclesPage extends StatefulWidget {
   CirclesPage({Key key}) : super(key: key);
@@ -12,18 +17,30 @@ class CirclesPage extends StatefulWidget {
 }
 
 class _CirclesPageState extends State<CirclesPage> {
-  int _pageNum = 0;
+  int _pageNum = 0, _activeTab = 0;
   EasyRefreshController _controller;
   Map _firstCircleClassify;
-  List _circleClassify;
+  List _circleClassify,
+      _tabs = [
+        '推荐',
+        '热议活动',
+        '圈挺新',
+        '圈挺火',
+        '圈主辛苦了',
+      ];
   @override
   void initState() {
     super.initState();
     _controller = EasyRefreshController();
     _circleClassify = [
-      {'title': '数码圈', 'icon': 'https:', 'link': 'aaa'},
       {
-        'title': '美衣圈',
+        'title': '数码圈',
+        'icon':
+            'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
+        'link': 'aaa'
+      },
+      {
+        'title': '时装圈',
         'icon':
             'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
         'link': 'aaa'
@@ -108,20 +125,37 @@ class _CirclesPageState extends State<CirclesPage> {
               fontSize: 16,
               fontWeight: FontWeight.bold),
         ),
+        SizedBox(
+          height: 10,
+        ),
         Container(
             height: 100,
             child: Row(
               children: [
                 Container(
+                  margin: EdgeInsets.only(right: 5),
+                  decoration: BoxDecoration(
+                      color: Colors.black12,
+                      borderRadius: BorderRadius.circular(4)),
                   width: 100,
                   child: Row(
                     children: [
-                      Column(
-                        children: [Text('${_firstCircleClassify['title']}')],
+                      Container(
+                        width: 50,
+                        child: Column(
+                          children: [Text('${_firstCircleClassify['title']}')],
+                        ),
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.end,
-                        children: [Text('${_firstCircleClassify['icon']}')],
+                        children: [
+                          Image.network(
+                            '${_firstCircleClassify['icon']}',
+                            width: 50,
+                            fit: BoxFit.fitWidth,
+                          )
+                        ],
                       )
                     ],
                   ),
@@ -139,9 +173,16 @@ class _CirclesPageState extends State<CirclesPage> {
                     children: List.generate(_circleClassify.length, (i) {
                       var item = _circleClassify[i];
                       return Container(
+                        decoration: BoxDecoration(
+                            color: Config().randomColor,
+                            borderRadius: BorderRadius.circular(4)),
                         alignment: Alignment.center,
-                        color: Colors.black45,
-                        child: Text('${item['title']}'),
+                        child: Text(
+                          '${item['title']}',
+                          style: TextStyle(
+                              color: TextColor.textPrimaryColor,
+                              fontWeight: FontWeight.bold),
+                        ),
                       );
                     }),
                   ),
@@ -149,6 +190,54 @@ class _CirclesPageState extends State<CirclesPage> {
               ],
             ))
       ],
+    );
+  }
+
+  Widget _buildTabs() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: List.generate(
+          _tabs.length,
+          (i) => GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _activeTab = i;
+                  });
+                },
+                child: Container(
+                    child: buildAnimatedDefaultTextStyle(
+                        Text(
+                          '${_tabs[i]}',
+                        ),
+                        _activeTab,
+                        i)),
+              )),
+    );
+  }
+
+  Widget _recommendCardList() {
+    return Container(
+      child: ListView.builder(
+        itemCount: 100,
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        itemBuilder: (BuildContext context, int index) {
+          return RecommendCard(
+              postsPreviewImgCount: 1,
+              postsPreviewImgs: [
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
+              ],
+              topic: '数码科技',
+              circleName: '王中王',
+              joinCircleNum: 100);
+        },
+      ),
     );
   }
 
@@ -196,15 +285,28 @@ class _CirclesPageState extends State<CirclesPage> {
                 _controller.finishLoad(noMore: _pageNum >= 20);
               });
             },
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
-                child: Column(
-                  children: [
-                    buildSearchBox(context),
-                    _hasJoined(5),
-                    _cicleClassify()
-                  ],
+            child: Container(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+                  child: Column(
+                    children: [
+                      buildSearchBox(context),
+                      _hasJoined(5),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      _cicleClassify(),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      _buildTabs(),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      _recommendCardList()
+                    ],
+                  ),
                 ),
               ),
             )));
