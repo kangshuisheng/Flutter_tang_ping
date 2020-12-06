@@ -10,10 +10,10 @@ class MessagePage extends StatefulWidget {
 
 class _MessagePageState extends State<MessagePage> {
   List<Map> _messageClassify = [
-    {'title': '系统通知', 'icon': '', 'msg': '暂无'},
-    {'title': '赞和收藏', 'icon': '', 'msg': '暂无'},
-    {'title': '评论和@', 'icon': '', 'msg': '暂无'},
-    {'title': '躺平服务区', 'icon': '', 'msg': '暂无'},
+    {'title': '系统通知', 'icon': null, 'msg': '暂无'},
+    {'title': '赞和收藏', 'icon': null, 'msg': '暂无'},
+    {'title': '评论和@', 'icon': null, 'msg': '暂无'},
+    {'title': '躺平服务区', 'icon': null, 'msg': '暂无'},
   ];
   @override
   Widget build(BuildContext context) {

@@ -51,7 +51,13 @@ class _MinePageState extends State<MinePage> {
                       children: [
                         Container(
                           child: Row(
-                            children: [Icon(Icons.edit), Text('编辑')],
+                            children: [
+                              Icon(
+                                Icons.edit,
+                                size: 14,
+                              ),
+                              Text('编辑')
+                            ],
                           ),
                         ),
                         SizedBox(

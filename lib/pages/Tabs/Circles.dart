@@ -6,6 +6,8 @@ import 'package:tang_ping/Widgets/AppbarTitle.dart';
 import 'package:tang_ping/Widgets/RecommendCard.dart';
 import 'package:tang_ping/Widgets/SearchBox.dart';
 import 'package:tang_ping/config.dart';
+import 'package:tang_ping/pages/CircleDetail.dart';
+import 'package:tang_ping/utils/AnimationRoute.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 import 'package:tang_ping/utils/TextStyleTransition.dart';
 
@@ -86,26 +88,31 @@ class _CirclesPageState extends State<CirclesPage> {
                 scrollDirection: Axis.horizontal,
                 children: List.generate(
                     joincirclesNum,
-                    (i) => Container(
-                          margin: EdgeInsets.only(right: 20),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: Image.network(
-                                  'https://i0.hdslb.com/bfs/archive/fcbc618b2bc83cb10e99b1257d9d639044fa46de.jpg@412w_232h_1c',
-                                  width: 50,
-                                  fit: BoxFit.fitWidth,
+                    (i) => GestureDetector(
+                          onTap: () => Navigator.push(
+                              context, FadeTransitionRoute(CircleDetail())),
+                          child: Container(
+                            margin: EdgeInsets.only(right: 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Image.network(
+                                    'https://i0.hdslb.com/bfs/archive/fcbc618b2bc83cb10e99b1257d9d639044fa46de.jpg@412w_232h_1c',
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.fill,
+                                  ),
                                 ),
-                              ),
-                              Text('数码爱好者'),
-                              Text(
-                                '3条更新',
-                                style: TextStyle(
-                                    color: TextColor.textSecondaryColor),
-                              )
-                            ],
+                                Text('数码爱好者'),
+                                Text(
+                                  '3条更新',
+                                  style: TextStyle(
+                                      color: TextColor.textSecondaryColor),
+                                )
+                              ],
+                            ),
                           ),
                         ))),
           )

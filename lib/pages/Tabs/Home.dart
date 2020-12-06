@@ -142,8 +142,7 @@ class _HomePageState extends State<HomePage> {
               '${_titleList[i]}',
               style: TextStyle(
                   fontSize: 16,
-                  fontWeight:
-                      _active == i ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: FontWeight.bold,
                   color: _active == i
                       ? TextColor.textPrimaryColor
                       : TextColor.textSecondaryColor),

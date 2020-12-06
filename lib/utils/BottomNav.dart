@@ -55,7 +55,7 @@ class BottomNavState extends State<BottomNav> {
                       tween: Tween(
                           begin: _currentIndex == i ? 20.0 : 10.0,
                           end: _currentIndex == i ? 25.0 : 22.0),
-                      duration: Duration(milliseconds: 200),
+                      duration: Duration(milliseconds: 300),
                       builder: (context, value, child) => Container(
                         height: 50,
                         width: 50,
@@ -67,7 +67,7 @@ class BottomNavState extends State<BottomNav> {
                               color: i == _currentIndex
                                   ? TextColor.textPrimaryColor
                                   : TextColor.textSecondaryColor,
-                              size: value,
+                              size: i == 2 ? 30 : value,
                             ),
                             _navItem[i]['title'].length > 0
                                 ? Text(

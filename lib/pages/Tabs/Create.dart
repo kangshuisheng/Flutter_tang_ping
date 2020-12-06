@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tang_ping/pages/CircleDetail.dart';
+import 'package:tang_ping/utils/AnimationRoute.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class CreatePage extends StatefulWidget {
@@ -47,7 +49,7 @@ class _CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
                 GestureDetector(
                   onTap: () {},
@@ -60,7 +62,7 @@ class _CreatePageState extends State<CreatePage> {
                   ),
                 ),
                 SizedBox(
-                  height: 20,
+                  height: 40,
                 ),
                 GestureDetector(
                   onTap: () {},
@@ -71,7 +73,26 @@ class _CreatePageState extends State<CreatePage> {
                             fontSize: 20,
                             fontWeight: FontWeight.bold)),
                   ),
-                )
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                      width: 30,
+                      height: 30,
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(40)),
+                      child: Icon(
+                        Icons.close,
+                        size: 14,
+                      )),
+                ),
               ],
             )
           ],
