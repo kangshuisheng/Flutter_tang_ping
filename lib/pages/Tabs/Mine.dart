@@ -74,7 +74,7 @@ class _MinePageState extends State<MinePage> {
                   height: 20,
                 ),
                 Row(
-                  children: [Text('躺平康水生')],
+                  children: [Text('躺平醉醺醺')],
                 ),
                 SizedBox(
                   height: 20,

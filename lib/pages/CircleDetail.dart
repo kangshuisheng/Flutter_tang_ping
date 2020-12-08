@@ -9,6 +9,14 @@ class CircleDetail extends StatefulWidget {
 }
 
 class _CircleDetailState extends State<CircleDetail> {
+  List<UserInfoModel> _lsit = [];
+  void add() {
+    UserInfoModel item = UserInfoModel(id: 100, psw: '1111', name: 'kss');
+    print(item);
+    _lsit.add(item);
+    print(_lsit);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,4 +47,11 @@ class _CircleDetailState extends State<CircleDetail> {
       ),
     );
   }
+}
+
+class UserInfoModel {
+  UserInfoModel({this.id, this.psw, this.name});
+  int id;
+  dynamic psw;
+  String name;
 }

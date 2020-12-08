@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -36,6 +37,8 @@ class _HomePageState extends State<HomePage> {
   int _pageNum = 0, _active = 0, _cosImgTotalCount = 0;
   List<String> _titleList = ['推荐', '关注'];
   List<dynamic> _defaultCosList = [];
+  int _last = 0;
+
   // List<String> _likeIDList = []; //存放新添加的喜欢
 
   var _imgPath;
@@ -59,6 +62,18 @@ class _HomePageState extends State<HomePage> {
         _defaultCosList.addAll(res['data']['items']);
         _cosImgTotalCount = res['data']['total_count'];
       });
+    }
+  }
+
+  Future<bool> doubleClickBack() {
+    int now = DateTime.now().millisecondsSinceEpoch;
+    if (now - _last > 1000) {
+      print(now - _last);
+      BotToast.showText(text: '再按一次退出???');
+      _last = DateTime.now().millisecondsSinceEpoch;
+      return Future.value(false);
+    } else {
+      return Future.value(true);
     }
   }
 
@@ -141,7 +156,7 @@ class _HomePageState extends State<HomePage> {
             child: Text(
               '${_titleList[i]}',
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: _active == i
                       ? TextColor.textPrimaryColor
@@ -421,6 +436,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        onWillPop: Config.doubleClickBack);
+        onWillPop: doubleClickBack);
   }
 }

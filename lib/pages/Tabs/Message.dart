@@ -25,7 +25,7 @@ class _MessagePageState extends State<MessagePage> {
           '消息',
           style: TextStyle(
               color: TextColor.textPrimaryColor,
-              fontSize: 14,
+              fontSize: 20,
               fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
