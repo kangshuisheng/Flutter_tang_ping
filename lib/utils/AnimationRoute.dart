@@ -87,15 +87,15 @@ class RotationTransitionRoute extends PageRouteBuilder {
             ) {
               // 旋转加缩放动画效果
               return RotationTransition(
-                alignment: Alignment.bottomCenter,
-                turns: Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+                // alignment: Alignment.bottomCenter,
+                turns: Tween(begin: 0.0, end: 0.0).animate(CurvedAnimation(
                   parent: animaton1,
                   curve: Curves.fastOutSlowIn,
                 )),
                 child: ScaleTransition(
                   alignment: Alignment.bottomCenter,
-                  scale: Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-                      parent: animaton1, curve: Curves.fastOutSlowIn)),
+                  scale: Tween(begin: 0.1, end: 1.0).animate(CurvedAnimation(
+                      parent: animaton1, curve: Curves.linearToEaseOut)),
                   child: child,
                 ),
               );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tang_ping/pages/CircleDetail.dart';
+import 'package:tang_ping/utils/AnimationRoute.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class CreatePage extends StatefulWidget {
@@ -12,7 +14,6 @@ class _CreatePageState extends State<CreatePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -30,21 +31,68 @@ class _CreatePageState extends State<CreatePage> {
               children: [
                 GestureDetector(
                   child: Column(
-                    children: [Icon(Icons.image), Text('发文章')],
+                    children: [
+                      Icon(
+                        Icons.image,
+                        color: TextColor.textSecondaryColor,
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        '发文章',
+                        style: TextStyle(
+                            color: TextColor.textSecondaryColor,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
                   ),
+                ),
+                SizedBox(
+                  height: 40,
                 ),
                 GestureDetector(
                   onTap: () {},
                   child: Container(
-                    child: Text('图文'),
+                    child: Text('图文',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ),
+                ),
+                SizedBox(
+                  height: 40,
                 ),
                 GestureDetector(
                   onTap: () {},
                   child: Container(
-                    child: Text('视频'),
+                    child: Text('视频',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold)),
                   ),
-                )
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                      width: 30,
+                      height: 30,
+                      padding: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(40)),
+                      child: Icon(
+                        Icons.close,
+                        size: 14,
+                      )),
+                ),
               ],
             )
           ],
