@@ -58,7 +58,6 @@ class HttpUtil {
     dio.interceptors
         .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
       print("请求之前 $options");
-      // Do something before request is sent
       return options; //continue
     }, onResponse: (Response response) async {
       // print("响应之前");
@@ -216,6 +215,7 @@ class HttpUtil {
           return Scaffold(
               //child里面的内容不会因为数据的改变而重绘
               appBar: AppBar(
+                elevation: 0,
                 title: Text(
                   '网络连接失败',
                   style: TextStyle(color: Colors.black),
@@ -229,7 +229,6 @@ class HttpUtil {
                     BotToast.remove(key);
                   },
                 ),
-                // backgroundColor: Colors.white,
                 centerTitle: true,
                 brightness: Brightness.light,
                 backgroundColor: Colors.white,

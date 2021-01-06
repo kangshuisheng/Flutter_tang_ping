@@ -32,6 +32,7 @@ class _CirclesPageState extends State<CirclesPage> {
       ];
   @override
   void initState() {
+    print("圈子init");
     super.initState();
     _controller = EasyRefreshController();
     _circleClassify = [
@@ -90,7 +91,10 @@ class _CirclesPageState extends State<CirclesPage> {
                     joincirclesNum,
                     (i) => GestureDetector(
                           onTap: () => Navigator.push(
-                              context, FadeTransitionRoute(CircleDetail())),
+                              context,
+                              FadeTransitionRoute(CircleDetail(
+                                props: {"name": "康水生", "age": "24"},
+                              ))),
                           child: Container(
                             margin: EdgeInsets.only(right: 20),
                             child: Column(
@@ -181,7 +185,7 @@ class _CirclesPageState extends State<CirclesPage> {
                       var item = _circleClassify[i];
                       return Container(
                         decoration: BoxDecoration(
-                            color: Config().randomColor,
+                            color: Colors.amberAccent,
                             borderRadius: BorderRadius.circular(4)),
                         alignment: Alignment.center,
                         child: Text(

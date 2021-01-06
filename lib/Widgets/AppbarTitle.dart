@@ -10,25 +10,28 @@ class AppbarTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(30),
-              image: DecorationImage(
-                  image: NetworkImage(
-                      'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1741476901,4013212021&fm=11&gp=0.jpg'))),
-        ),
-        widget,
-        GestureDetector(
-            onTap: () {
-              callback();
-            },
-            child: icon)
-      ],
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                image: DecorationImage(
+                    image: NetworkImage(
+                        'https://th.wallhaven.cc/small/vg/vg7lv3.jpg'),
+                    fit: BoxFit.cover)),
+          ),
+          widget,
+          GestureDetector(
+              onTap: () {
+                callback();
+              },
+              child: icon)
+        ],
+      ),
     );
   }
 }

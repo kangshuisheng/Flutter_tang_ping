@@ -35,7 +35,7 @@ class RecommendCard extends StatelessWidget {
                   ClipRRect(
                       borderRadius: BorderRadius.circular(24),
                       child: Image.network(
-                        'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1741476901,4013212021&fm=11&gp=0.jpg',
+                        'https://th.wallhaven.cc/small/vg/vg7lv3.jpg',
                         width: 24,
                       )),
                   SizedBox(

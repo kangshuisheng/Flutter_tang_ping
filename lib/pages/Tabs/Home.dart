@@ -8,11 +8,11 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tang_ping/Widgets/AppbarTitle.dart';
 import 'package:tang_ping/Widgets/SearchBox.dart';
-import 'package:tang_ping/config.dart';
 import 'package:tang_ping/utils/AnimationRoute.dart';
 import 'package:tang_ping/utils/Http.dart';
 import 'package:tang_ping/utils/PlaceHolderImg_page.dart';
 import 'package:tang_ping/utils/PreviewImg.dart';
+import 'package:tang_ping/utils/RandomColorContainer.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,16 +26,19 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _getCosList(_pageNum);
     _controller = EasyRefreshController();
+    _pageController = PageController(initialPage: _active, keepPage: true);
   }
 
   @override
   void dispose() {
+    _controller.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
   EasyRefreshController _controller;
+  PageController _pageController;
   int _pageNum = 0, _active = 0, _cosImgTotalCount = 0;
-  List<String> _titleList = ['推荐', '关注'];
   List<dynamic> _defaultCosList = [];
   int _last = 0;
 
@@ -68,8 +71,7 @@ class _HomePageState extends State<HomePage> {
   Future<bool> doubleClickBack() {
     int now = DateTime.now().millisecondsSinceEpoch;
     if (now - _last > 1000) {
-      print(now - _last);
-      BotToast.showText(text: '再按一次退出???');
+      BotToast.showText(text: '再按一次退出');
       _last = DateTime.now().millisecondsSinceEpoch;
       return Future.value(false);
     } else {
@@ -144,7 +146,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildTab(int i) {
+  Widget _buildTab(List arr, int i) {
     return GestureDetector(
         onTap: () {
           setState(() {
@@ -152,290 +154,288 @@ class _HomePageState extends State<HomePage> {
           });
         },
         child: Container(
-            margin: EdgeInsets.only(right: 10),
+            // margin: EdgeInsets.only(right: 10),
             child: Text(
-              '${_titleList[i]}',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: _active == i
-                      ? TextColor.textPrimaryColor
-                      : TextColor.textSecondaryColor),
-            )));
+          '${arr[i]["title"]}',
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: _active == i
+                  ? TextColor.textPrimaryColor
+                  : TextColor.textSecondaryColor),
+        )));
   }
 
   Widget _buildGridList() {
-    return StaggeredGridView.countBuilder(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      crossAxisCount: 4,
-      itemCount: _defaultCosList.length,
-      itemBuilder: (BuildContext context, int index) {
-        var item = _defaultCosList[index]['item'];
-        var user = _defaultCosList[index]['user'];
-        var imgs = [];
-        for (var i = 0; i < item['pictures'].length; i++) {
-          imgs.add(item['pictures'][i]['img_src']);
-        }
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-                child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          FadeTransitionRoute(PreviewImgPage(
-                            images: imgs,
-                            index: 0,
-                            heroTag: item['title'],
-                          )));
-                    },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(5),
-                      child: ImageWidgetPlaceholder(
-                          imgUrl: item['pictures'][0]['img_src'],
-                          placeHolder: Container(
-                            color: Color.fromRGBO(
-                                Random().nextInt(255),
-                                Random().nextInt(255),
-                                Random().nextInt(255),
-                                .7),
-                          )),
-                    ))),
-            SizedBox(
-              height: 15,
-            ),
-            Text(
-              '${item['title']}',
-              style: TextStyle(color: TextColor.textPrimaryColor),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _showBottomSheet(context, index: index, user: user);
-                  },
-                  child: Icon(
-                    Icons.more_horiz,
-                    color: TextColor.textSecondaryColor,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () async {
-                    // SharedPreferences prefs =
-                    //     await SharedPreferences.getInstance();
-                    setState(() {
-                      if (item['already_liked'] == 1) {
-                        // _likeIDList.removeWhere(
-                        //     (element) => element == '${item['doc_id']}');
-                        item['already_liked'] = 0;
-                        // prefs.setStringList('likeCos', _likeIDList);
-
-                        // _likeCosList.removeWhere((element) =>
-                        //     element[item]['doc_id'] == '${item['doc_id']}');
-                        // print('移除后list ===>> $_likeIDList');
-                        // print('移除后coslist ===>> ${_likeCosList.length}');
-                      } else {
-                        // _likeIDList.add('${item['doc_id']}');
-                        item['already_liked'] = 1;
-                        // prefs.setStringList('likeCos', _likeIDList);
-                        // // _getLikeCos();
-                        // print('添加后list ===>> $_likeIDList');
-                        // print('添加后coslist ===>> $_likeCosList');
-                      }
-                    });
-                  },
-                  child: Icon(
-                    Icons.thumb_up,
-                    color: item['already_liked'] == 0
-                        ? TextColor.textSecondaryColor
-                        : Colors.redAccent,
-                    size: 18,
-                  ),
-                )
-              ],
-            )
-          ],
-        );
-      },
-      staggeredTileBuilder: (int index) =>
-          StaggeredTile.count(2, index.isEven ? 3 : 2),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-    );
-  }
-
-  Widget _buildColumnList() {
-    return ListView.builder(
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: _defaultCosList.length,
-      itemBuilder: (context, i) {
-        var item = _defaultCosList[i]['item'];
-        var user = _defaultCosList[i]['user'];
-        return Container(
-          margin: EdgeInsets.only(bottom: 30),
-          child: Column(
+    return SingleChildScrollView(
+      child: StaggeredGridView.countBuilder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        addAutomaticKeepAlives: true,
+        crossAxisCount: 4,
+        itemCount: _defaultCosList.length,
+        itemBuilder: (BuildContext context, int index) {
+          final item = _defaultCosList[index]['item'];
+          final user = _defaultCosList[index]['user'];
+          var imgs = [];
+          for (var i = 0; i < item['pictures'].length; i++) {
+            imgs.add(item['pictures'][i]['img_src']);
+          }
+          // print("??????????????${item['pictures'][0]['img_src']}");
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flex(
-                      direction: Axis.horizontal,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(30),
-                          child: Image(
-                            image: NetworkImage(user['head_url']),
-                            width: 30,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Text('${user['name']}')
-                      ],
-                    ),
-                    Container(
-                      child: Icon(
-                        Icons.more_horiz,
-                        size: 24,
-                        color: Colors.black38,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Container(
-                  constraints: BoxConstraints(
-                      maxHeight: MediaQuery.of(context).size.height / 1.5),
-                  child: Swiper(
-                    loop: false,
-                    itemCount: item['pictures'].length,
-                    control: SwiperControl(color: Colors.white),
-                    onIndexChanged: (i) {},
-                    itemBuilder: (context, index) {
-                      return ClipRRect(
-                          borderRadius: BorderRadius.circular(5),
-                          child: ImageWidgetPlaceholder(
-                            imgUrl: '${item['pictures'][index]['img_src']}',
-                            placeHolder: Container(
-                              color: Colors.black12,
-                            ),
-                          ));
-                    },
-                  )),
+              Expanded(
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            FadeTransitionRoute(PreviewImgPage(
+                              images: imgs,
+                              index: 0,
+                              heroTag: item['title'],
+                            )));
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(5),
+                        child: ImageWidgetPlaceholder(
+                            key: ValueKey(item['pictures'][0]['img_src']),
+                            imgUrl: item['pictures'][0]['img_src'] ??
+                                'https://th.wallhaven.cc/small/vg/vg7lv3.jpg',
+                            placeHolder: RandomColorCotnainer()),
+                      ))),
               SizedBox(
                 height: 15,
               ),
               Text(
                 '${item['title']}',
-                style:
-                    TextStyle(color: TextColor.textPrimaryColor, fontSize: 16),
+                style: TextStyle(color: TextColor.textPrimaryColor),
               ),
               SizedBox(
-                height: 15,
+                height: 10,
               ),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                      child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () {},
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '说点什么...',
-                                style: TextStyle(
-                                    color: TextColor.textSecondaryColor),
-                              ),
-                              Icon(Icons.ac_unit,
-                                  color: TextColor.textSecondaryColor)
-                            ],
-                          ))),
-                  SizedBox(
-                    width: 40,
+                  GestureDetector(
+                    onTap: () {
+                      _showBottomSheet(context, index: index, user: user);
+                    },
+                    child: Icon(
+                      Icons.more_horiz,
+                      color: TextColor.textSecondaryColor,
+                    ),
                   ),
-                  Icon(Icons.lens, color: TextColor.textSecondaryColor)
+                  GestureDetector(
+                    onTap: () async {
+                      setState(() {
+                        if (item['already_liked'] == 1) {
+                          item['already_liked'] = 0;
+                        } else {
+                          item['already_liked'] = 1;
+                        }
+                      });
+                    },
+                    child: Icon(
+                      Icons.thumb_up,
+                      color: item['already_liked'] == 0
+                          ? TextColor.textSecondaryColor
+                          : Colors.redAccent,
+                      size: 18,
+                    ),
+                  )
                 ],
               )
             ],
-          ),
-        );
-      },
+          );
+        },
+        staggeredTileBuilder: (int index) =>
+            StaggeredTile.count(2, index.isEven ? 3 : 2),
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+      ),
+    );
+  }
+
+  Widget _buildColumnList() {
+    return SingleChildScrollView(
+      child: ListView.builder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: _defaultCosList.length,
+        itemBuilder: (context, i) {
+          var item = _defaultCosList[i]['item'];
+          var user = _defaultCosList[i]['user'];
+          return Container(
+            margin: EdgeInsets.only(bottom: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flex(
+                        direction: Axis.horizontal,
+                        children: [
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(30),
+                              child: ImageWidgetPlaceholder(
+                                key: ValueKey(user['head_url']),
+                                imgUrl: user['head_url'],
+                                width: 30,
+                                placeHolder: Container(
+                                  width: 30,
+                                  height: 30,
+                                  color: Colors.black87,
+                                ),
+                              )),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text('${user['name']}')
+                        ],
+                      ),
+                      Container(
+                        child: Icon(
+                          Icons.more_horiz,
+                          size: 24,
+                          color: Colors.black38,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                    constraints: BoxConstraints(
+                        maxHeight: MediaQuery.of(context).size.height / 1.5),
+                    child: Swiper(
+                      loop: false,
+                      itemCount: item['pictures'].length,
+                      control: SwiperControl(color: Colors.white),
+                      onIndexChanged: (i) {},
+                      itemBuilder: (context, index) {
+                        return ClipRRect(
+                            borderRadius: BorderRadius.circular(5),
+                            child: ImageWidgetPlaceholder(
+                              imgUrl: '${item['pictures'][index]['img_src']}',
+                              placeHolder: Container(
+                                color: Colors.black12,
+                              ),
+                            ));
+                      },
+                    )),
+                SizedBox(
+                  height: 15,
+                ),
+                Text(
+                  '${item['title']}',
+                  style: TextStyle(
+                      color: TextColor.textPrimaryColor, fontSize: 16),
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                        child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {},
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  '说点什么...',
+                                  style: TextStyle(
+                                      color: TextColor.textSecondaryColor),
+                                ),
+                                Icon(Icons.ac_unit,
+                                    color: TextColor.textSecondaryColor)
+                              ],
+                            ))),
+                    SizedBox(
+                      width: 40,
+                    ),
+                    Icon(Icons.lens, color: TextColor.textSecondaryColor)
+                  ],
+                )
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    List<Map> pages = [
+      {"title": "推荐", "component": _buildGridList()},
+      {"title": "关注", "component": _buildColumnList()}
+    ];
     return WillPopScope(
         child: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            backgroundColor: Colors.white,
-            title: AppbarTitle(
-              widget: Flex(
-                direction: Axis.horizontal,
-                children: List.generate(_titleList.length, (i) => _buildTab(i)),
-              ),
-              callback: () {},
-              icon: Icon(
-                Icons.more_horiz,
-                size: 30,
-                color: Colors.black38,
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.white,
+              title: AppbarTitle(
+                widget: Container(
+                  width: 80,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children:
+                        List.generate(pages.length, (i) => _buildTab(pages, i)),
+                  ),
+                ),
+                icon: Icon(
+                  Icons.more_horiz,
+                  size: 30,
+                  color: Colors.black38,
+                ),
               ),
             ),
-          ),
-          body: EasyRefresh(
-            enableControlFinishRefresh: false,
-            enableControlFinishLoad: true,
-            controller: _controller,
-            header: ClassicalHeader(),
-            footer: ClassicalFooter(),
-            onRefresh: () async {
-              setState(() {
-                _pageNum = 0;
-              });
-              _getCosList(0);
-              await Future.delayed(Duration(seconds: 2), () {
-                print('onRefresh');
-                _controller.resetLoadState();
-              });
-            },
-            onLoad: () async {
-              setState(() {
-                _pageNum++;
-              });
-              _getCosList(_pageNum);
-              await Future.delayed(Duration(seconds: 2), () {
-                print('onLoad');
-                _controller.finishLoad(
-                    noMore: _defaultCosList.length >= _cosImgTotalCount);
-              });
-            },
-            child: SingleChildScrollView(
-              child: Padding(
-                  padding: EdgeInsets.fromLTRB(15, 15, 15, 0),
+            body: EasyRefresh(
+                enableControlFinishRefresh: false,
+                enableControlFinishLoad: true,
+                controller: _controller,
+                header: ClassicalHeader(),
+                footer: ClassicalFooter(),
+                onRefresh: () async {
+                  setState(() {
+                    _pageNum = 0;
+                    _defaultCosList = [];
+                  });
+                  _getCosList(0);
+                  await Future.delayed(Duration(seconds: 2), () {
+                    print('onRefresh');
+                    _controller.resetLoadState();
+                  });
+                },
+                onLoad: () async {
+                  setState(() {
+                    _pageNum++;
+                  });
+                  _getCosList(_pageNum);
+                  await Future.delayed(Duration(seconds: 2), () {
+                    print('onLoad');
+                    _controller.finishLoad(
+                        noMore: _defaultCosList.length >= _cosImgTotalCount);
+                  });
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
                   child: Column(
                     children: [
                       buildSearchBox(context),
-                      _active == 0 ? _buildGridList() : _buildColumnList(),
+                      pages[_active]["component"]
                     ],
-                  )),
-            ),
-          ),
-        ),
+                  ),
+                ))),
         onWillPop: doubleClickBack);
   }
 }

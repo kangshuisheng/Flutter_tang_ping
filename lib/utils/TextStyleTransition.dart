@@ -31,9 +31,7 @@ AnimatedDefaultTextStyle buildAnimatedDefaultTextStyle(
 
     ///每当样式有修改触发动画时
     ///动画执行结束的回调
-    onEnd: () {
-      print("动画执行结束");
-    },
+    onEnd: () {},
 
     ///文本组件
     child: textWidegt,

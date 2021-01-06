@@ -16,7 +16,6 @@ class BottomNav extends StatefulWidget {
 
 class BottomNavState extends State<BottomNav> {
   int _currentIndex = 0;
-  // List _currentPage = [HomePage(), MinePage()];
   List _navItem = [
     {'icon': Icons.home, 'title': '首页'},
     {'icon': Icons.adjust, 'title': '圈子'},
