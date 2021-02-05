@@ -181,6 +181,7 @@ class _HomeFocusState extends State<HomeFocus>
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(5),
                                   child: ImageWidgetPlaceholder(
+                                      fit: BoxFit.cover,
                                       key: ValueKey(
                                           item['pictures'][0]['img_src']),
                                       imgUrl: item['pictures'][0]['img_src'] ??
@@ -192,7 +193,9 @@ class _HomeFocusState extends State<HomeFocus>
                         ),
                         Text(
                           '${item['title']}',
-                          style: TextStyle(color: TextColor.textPrimaryColor),
+                          style: TextStyle(
+                              color: TextColor.textPrimaryColor,
+                              fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
                           height: 10,

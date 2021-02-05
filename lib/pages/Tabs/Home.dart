@@ -124,7 +124,19 @@ class _HomePageState extends State<HomePage> {
                   _active = i;
                 });
               },
-              children: [HomeFocus(), HomeRecommend()],
+              children: [
+                HomeFocus(),
+                HomeRecommend(
+                  callback: () {
+                    setState(() {
+                      _active = 0;
+                    });
+                    _pageController.animateToPage(_active,
+                        duration: Duration(milliseconds: 350),
+                        curve: Curves.linear);
+                  },
+                )
+              ],
             )),
         onWillPop: doubleClickBack);
   }

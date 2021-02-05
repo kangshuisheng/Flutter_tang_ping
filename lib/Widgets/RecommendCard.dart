@@ -7,9 +7,11 @@ class RecommendCard extends StatelessWidget {
   final List postsPreviewImgs; //? 预览图
   final String topic, circleName; //? 所属话题, 圈子名字
   final int joinCircleNum; //? 加入人数
+  final String headUrl;
 
   RecommendCard(
       {Key key,
+      @required this.headUrl,
       @required this.postsPreviewImgCount,
       @required this.postsPreviewImgs,
       @required this.topic,
@@ -22,7 +24,7 @@ class RecommendCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           color: Colors.white, borderRadius: BorderRadius.circular(6)),
-      padding: EdgeInsets.all(14),
+      padding: EdgeInsets.fromLTRB(14, 14, 14, 14),
       margin: EdgeInsets.only(bottom: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,8 +37,9 @@ class RecommendCard extends StatelessWidget {
                   ClipRRect(
                       borderRadius: BorderRadius.circular(24),
                       child: Image.network(
-                        'https://th.wallhaven.cc/small/vg/vg7lv3.jpg',
+                        headUrl,
                         width: 24,
+                        fit: BoxFit.cover,
                       )),
                   SizedBox(
                     width: 10,
@@ -72,25 +75,29 @@ class RecommendCard extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(postsPreviewImgs.length, (index) {
-              var item = postsPreviewImgs[index];
-              if (index >= 3) {
-                return SizedBox();
-              } else {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.network(
-                    '$item',
-                    width: 300 / 4,
-                    height: 300 / 4,
-                    fit: BoxFit.fill,
+          Container(
+            height: 150,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: postsPreviewImgs.length,
+              itemBuilder: (BuildContext context, int index) {
+                var item = postsPreviewImgs[index];
+                return Container(
+                  margin: EdgeInsets.only(
+                      right: index == postsPreviewImgs.length - 1 ? 0 : 4),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.network(
+                      '${item["img_src"]}',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 );
-              }
-            }),
-          ),
+              },
+            ),
+          )
         ],
       ),
     );
