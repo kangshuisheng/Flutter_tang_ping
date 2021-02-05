@@ -5,8 +5,9 @@ class ImageWidgetPlaceholder extends StatelessWidget {
   final String imgUrl;
   final Widget placeHolder;
   final double width;
+  final BoxFit fit;
   const ImageWidgetPlaceholder(
-      {Key key, this.imgUrl, this.width, this.placeHolder})
+      {Key key, this.fit, this.imgUrl, this.width, this.placeHolder})
       : super(key: key);
 
   @override
@@ -14,7 +15,7 @@ class ImageWidgetPlaceholder extends StatelessWidget {
     return Image(
       image: NetworkImage(imgUrl),
       width: width ?? double.infinity,
-      fit: BoxFit.cover,
+      fit: fit,
       frameBuilder: (context, child, frame, wasSynchronousLoaded) {
         if (wasSynchronousLoaded) {
           return child;

@@ -5,9 +5,10 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:tang_ping/Widgets/AppbarTitle.dart';
 import 'package:tang_ping/Widgets/RecommendCard.dart';
 import 'package:tang_ping/Widgets/SearchBox.dart';
-import 'package:tang_ping/config.dart';
 import 'package:tang_ping/pages/CircleDetail.dart';
 import 'package:tang_ping/utils/AnimationRoute.dart';
+import 'package:tang_ping/utils/Api.dart';
+import 'package:tang_ping/utils/Http.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 import 'package:tang_ping/utils/TextStyleTransition.dart';
 
@@ -21,6 +22,8 @@ class CirclesPage extends StatefulWidget {
 class _CirclesPageState extends State<CirclesPage> {
   int _pageNum = 0, _activeTab = 0;
   EasyRefreshController _controller;
+  List _imgList = [];
+  int _totalCount = 0;
   Map _firstCircleClassify;
   List _circleClassify,
       _tabs = [
@@ -30,10 +33,11 @@ class _CirclesPageState extends State<CirclesPage> {
         '圈挺火',
         '圈主辛苦了',
       ];
+
   @override
   void initState() {
     print("圈子init");
-    super.initState();
+    _getImgList();
     _controller = EasyRefreshController();
     _circleClassify = [
       {
@@ -42,33 +46,24 @@ class _CirclesPageState extends State<CirclesPage> {
             'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
         'link': 'aaa'
       },
-      {
-        'title': '时装圈',
-        'icon':
-            'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
-        'link': 'aaa'
-      },
-      {
-        'title': '技术宅',
-        'icon':
-            'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
-        'link': 'aaa'
-      },
-      {
-        'title': '每日口语',
-        'icon':
-            'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
-        'link': 'aaa'
-      },
-      {
-        'title': '沙雕聚集地',
-        'icon':
-            'https://i0.hdslb.com/bfs/sycp/creative_img/202011/ebf3554e848e9eed401c398b65eb3d53.jpg@412w_232h_1c',
-        'link': 'aaa'
-      },
+      {'title': '时装圈', 'link': 'aaa'},
+      {'title': '技术宅', 'link': 'aaa'},
+      {'title': '每日口语', 'link': 'aaa'},
+      {'title': '沙雕聚集地', 'link': 'aaa'},
     ];
     _firstCircleClassify = _circleClassify.removeAt(0);
-    print(_circleClassify);
+    super.initState();
+  }
+
+  void _getImgList() async {
+    var res = await HttpUtil().post(Api.BiliBili_cos_new,
+        data: {"page_num": _pageNum, "page_size": 10});
+    if (res["code"] == 0) {
+      setState(() {
+        _imgList.addAll(res["data"]["items"]);
+        _totalCount = res["data"]["total_count"];
+      });
+    }
   }
 
   Widget _hasJoined(joincirclesNum) {
@@ -140,11 +135,11 @@ class _CirclesPageState extends State<CirclesPage> {
           height: 10,
         ),
         Container(
-            height: 100,
+            height: 98,
             child: Row(
               children: [
                 Container(
-                  margin: EdgeInsets.only(right: 5),
+                  margin: EdgeInsets.only(right: 6),
                   decoration: BoxDecoration(
                       color: Colors.black12,
                       borderRadius: BorderRadius.circular(4)),
@@ -172,15 +167,13 @@ class _CirclesPageState extends State<CirclesPage> {
                   ),
                 ),
                 Expanded(
-                    child: Container(
-                  height: 100,
                   child: GridView(
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 2.75,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5),
+                        mainAxisSpacing: 6,
+                        crossAxisSpacing: 6),
                     children: List.generate(_circleClassify.length, (i) {
                       var item = _circleClassify[i];
                       return Container(
@@ -197,7 +190,7 @@ class _CirclesPageState extends State<CirclesPage> {
                       );
                     }),
                   ),
-                ))
+                )
               ],
             ))
       ],
@@ -229,23 +222,17 @@ class _CirclesPageState extends State<CirclesPage> {
   Widget _recommendCardList() {
     return Container(
       child: ListView.builder(
-        itemCount: 100,
+        itemCount: _imgList.length,
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
+          var item = _imgList[index];
           return RecommendCard(
-              postsPreviewImgCount: 1,
-              postsPreviewImgs: [
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-                'https://img-s-msn-com.akamaized.net/tenant/amp/entityid/BBUpVFY.img',
-              ],
-              topic: '数码科技',
-              circleName: '王中王',
+              headUrl: item['user']['head_url'],
+              postsPreviewImgCount: 4,
+              postsPreviewImgs: item['item']['pictures'],
+              topic: item['user']['name'],
+              circleName: item['item']['title'],
               joinCircleNum: 100);
         },
       ),
@@ -282,6 +269,7 @@ class _CirclesPageState extends State<CirclesPage> {
               setState(() {
                 _pageNum = 0;
               });
+              _getImgList();
               await Future.delayed(Duration(seconds: 2), () {
                 print('onRefresh');
                 _controller.resetLoadState();
@@ -291,6 +279,7 @@ class _CirclesPageState extends State<CirclesPage> {
               setState(() {
                 _pageNum++;
               });
+              _getImgList();
               await Future.delayed(Duration(seconds: 2), () {
                 print('onLoad');
                 _controller.finishLoad(noMore: _pageNum >= 20);
