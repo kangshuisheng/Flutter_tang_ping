@@ -68,7 +68,6 @@ class _CirclesPageState extends State<CirclesPage> {
       },
     ];
     _firstCircleClassify = _circleClassify.removeAt(0);
-    print(_circleClassify);
   }
 
   Widget _hasJoined(joincirclesNum) {
@@ -140,11 +139,11 @@ class _CirclesPageState extends State<CirclesPage> {
           height: 10,
         ),
         Container(
-            height: 100,
+            height: 98,
             child: Row(
               children: [
                 Container(
-                  margin: EdgeInsets.only(right: 5),
+                  margin: EdgeInsets.only(right: 6),
                   decoration: BoxDecoration(
                       color: Colors.black12,
                       borderRadius: BorderRadius.circular(4)),
@@ -172,15 +171,13 @@ class _CirclesPageState extends State<CirclesPage> {
                   ),
                 ),
                 Expanded(
-                    child: Container(
-                  height: 100,
                   child: GridView(
                     physics: NeverScrollableScrollPhysics(),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         childAspectRatio: 2.75,
-                        mainAxisSpacing: 5,
-                        crossAxisSpacing: 5),
+                        mainAxisSpacing: 6,
+                        crossAxisSpacing: 6),
                     children: List.generate(_circleClassify.length, (i) {
                       var item = _circleClassify[i];
                       return Container(
@@ -197,7 +194,7 @@ class _CirclesPageState extends State<CirclesPage> {
                       );
                     }),
                   ),
-                ))
+                )
               ],
             ))
       ],
