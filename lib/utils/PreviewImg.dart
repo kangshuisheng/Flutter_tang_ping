@@ -7,14 +7,14 @@ class PreviewImgPage extends StatefulWidget {
   List images = [];
   int index = 0;
   String heroTag;
-  PageController controller;
+  PageController? controller;
 
   PreviewImgPage(
-      {Key key,
-      @required this.images,
-      this.index,
+      {Key? key,
+      required this.images,
+      required this.index,
       this.controller,
-      this.heroTag})
+      required this.heroTag})
       : super(key: key) {
     controller = PageController(initialPage: index);
   }
@@ -55,9 +55,6 @@ class _PreviewImgPageState extends State<PreviewImgPage> {
                     );
                   },
                   itemCount: widget.images.length,
-                  loadFailedChild: Container(
-                    child: Text('加载中'),
-                  ),
                   loadingBuilder: (context, event) => Container(
                     child: Text('加载中'),
                   ),

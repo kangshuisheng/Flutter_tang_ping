@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class MinePage extends StatefulWidget {
-  MinePage({Key key}) : super(key: key);
+  MinePage({Key? key}) : super(key: key);
 
   @override
   _MinePageState createState() => _MinePageState();

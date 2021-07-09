@@ -4,10 +4,14 @@ import 'package:flutter/material.dart';
 class ImageWidgetPlaceholder extends StatelessWidget {
   final String imgUrl;
   final Widget placeHolder;
-  final double width;
+  final double? width;
   final BoxFit fit;
   const ImageWidgetPlaceholder(
-      {Key key, this.fit, this.imgUrl, this.width, this.placeHolder})
+      {Key? key,
+      required this.fit,
+      required this.imgUrl,
+      this.width,
+      required this.placeHolder})
       : super(key: key);
 
   @override

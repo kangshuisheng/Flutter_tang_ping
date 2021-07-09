@@ -2,21 +2,11 @@ import 'dart:math';
 
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tang_ping/Widgets/AppbarTitle.dart';
-import 'package:tang_ping/Widgets/SearchBox.dart';
 import 'package:tang_ping/pages/HomeFocus.dart';
 import 'package:tang_ping/pages/HomeRecommend.dart';
-import 'package:tang_ping/utils/AnimationRoute.dart';
-import 'package:tang_ping/utils/Http.dart';
-import 'package:tang_ping/utils/PlaceHolderImg_page.dart';
-import 'package:tang_ping/utils/PreviewImg.dart';
-import 'package:tang_ping/utils/RandomColorContainer.dart';
 import 'package:tang_ping/utils/TextColor.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,16 +14,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  PageController _pageController;
+  late PageController _pageController;
   int _active = 0;
   int _last = 0;
   List<Map> pages = [
-    {
-      "title": "推荐",
-    },
-    {
-      "title": "关注",
-    }
+    {"title": "推荐"},
+    {"title": "关注"}
   ];
 
   @override
@@ -115,6 +101,7 @@ class _HomePageState extends State<HomePage> {
                   size: 30,
                   color: Colors.black38,
                 ),
+                callback: () {},
               ),
             ),
             body: PageView(
@@ -125,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                 });
               },
               children: [
-                HomeFocus(),
+                HomeFocus(props: {}),
                 HomeRecommend(
                   callback: () {
                     setState(() {
@@ -135,6 +122,7 @@ class _HomePageState extends State<HomePage> {
                         duration: Duration(milliseconds: 350),
                         curve: Curves.linear);
                   },
+                  porps: {},
                 )
               ],
             )),

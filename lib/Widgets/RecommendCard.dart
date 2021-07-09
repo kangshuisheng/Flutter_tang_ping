@@ -10,13 +10,13 @@ class RecommendCard extends StatelessWidget {
   final String headUrl;
 
   RecommendCard(
-      {Key key,
-      @required this.headUrl,
-      @required this.postsPreviewImgCount,
-      @required this.postsPreviewImgs,
-      @required this.topic,
-      @required this.circleName,
-      @required this.joinCircleNum})
+      {Key? key,
+      required this.headUrl,
+      required this.postsPreviewImgCount,
+      required this.postsPreviewImgs,
+      required this.topic,
+      required this.circleName,
+      required this.joinCircleNum})
       : super(key: key);
 
   @override

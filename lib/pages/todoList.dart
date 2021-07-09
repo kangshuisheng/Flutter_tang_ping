@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TodoList extends StatefulWidget {
-  TodoList({Key key}) : super(key: key);
+  TodoList({Key? key}) : super(key: key);
 
   @override
   _TodoListState createState() => _TodoListState();
@@ -63,7 +63,7 @@ class _TodoListState extends State<TodoList> {
                   value: _todos[i].isDone,
                   onChanged: (nvalue) {
                     setState(() {
-                      _todos[i].isDone = nvalue;
+                      _todos[i].isDone = nvalue!;
                     });
                   }),
               GestureDetector(

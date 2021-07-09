@@ -11,7 +11,7 @@ import 'package:tang_ping/utils/RandomColorContainer.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class HomeFocus extends StatefulWidget {
-  HomeFocus({Key key, this.props}) : super(key: key);
+  HomeFocus({Key? key, required this.props}) : super(key: key);
   final Map props;
   @override
   _HomeFocusState createState() => _HomeFocusState();
@@ -22,7 +22,7 @@ class _HomeFocusState extends State<HomeFocus>
   EasyRefreshController _controller = EasyRefreshController();
   int _pageNum = 0;
   List _imgList = [];
-  int _imgCount;
+  late int _imgCount;
 
   @override
   bool get wantKeepAlive => true;
@@ -33,7 +33,7 @@ class _HomeFocusState extends State<HomeFocus>
     _getCosList(_pageNum);
   }
 
-  void _showBottomSheet(context, {int index, Map user}) {
+  void _showBottomSheet(context, {required int index, required Map user}) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {

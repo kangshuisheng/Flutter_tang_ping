@@ -1,180 +1,172 @@
-import 'dart:io';
 import 'dart:convert';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:dio/dio.dart';
-import 'package:bot_toast/bot_toast.dart';
+import 'package:get/get.dart' as getx;
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef void ChildContext(BuildContext context);
 
 class HttpUtil {
-  static HttpUtil instance;
-  Dio dio;
-  BaseOptions options;
-  String baseUrl;
-  Map<String, dynamic> commonParameter = {
-    'system_type': Platform.operatingSystem,
-    // 'time_stamp': Utils.currentTimeMillis(),
-    // 'version_num': Config.VERSION,
-  };
-
+  late Dio _dio;
+  late BaseOptions options;
+  final bool isETD;
   CancelToken cancelToken = CancelToken();
 
-  static HttpUtil getInstance() {
-    if (null == instance) instance = HttpUtil();
-    return instance;
-  }
-
-  /*
-   * config it and create
-   */
-  HttpUtil() {
+  HttpUtil({this.isETD = false}) {
     //BaseOptions、Options、RequestOptions 都可以配置参数，优先级别依次递增，且可以根据优先级别覆盖参数
     options = BaseOptions(
       //请求基地址,可以包含子路径
-      baseUrl: baseUrl,
+      // baseUrl: isETD ? Config.etdBaseURL : Config.baseURL,
       //连接服务器超时时间，单位是毫秒.
-      connectTimeout: 10000,
+      connectTimeout: 100000,
       //响应流上前后两次接受到数据的间隔，单位为毫秒。
-      receiveTimeout: 5000,
-      //Http请求头.
-      headers: {
-        //do something
-        "version": "1.0.2"
-      },
+      receiveTimeout: 100000,
+
+      headers: {},
       //请求的Content-Type，默认值是[ContentType.json]. 也可以用ContentType.parse("application/x-www-form-urlencoded")
-      contentType: 'ContentType.json',
+      // contentType: 'ContentType.json',
+      //
       //表示期望以那种格式(方式)接受响应数据。接受四种类型 `json`, `stream`, `plain`, `bytes`. 默认值是 `json`,
       responseType: ResponseType.plain,
     );
 
-    dio = Dio(options);
+    _dio = Dio(options);
+    // 添加拦截器
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (
+        RequestOptions options,
+        RequestInterceptorHandler handler,
+      ) async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var token = prefs.getString("accessToken") ?? "";
+        var etdToken = prefs.get("etdToken") ?? "";
 
-    //Cookie管理
-    // dio.interceptors.add(CookieManager(CookieJar()));
+        var authorization = "Authorization $token";
+        if (options.path != "/auth/token") {
+          if (token.isNotEmpty && !isETD) {
+            options.headers.addAll({"Authorization": authorization});
+          }
+        }
+        options.headers.addAll({"x-auth-token": etdToken});
+        print("""
+请求之前 😄😄😄😄😄😄😄😄
+URL       ${options.baseUrl}${options.path}
+HEADERS   ${options.headers}
+METHOD    ${options.method}
+DATA      ${options.queryParameters}
+      """);
+        return handler.next(options);
+      },
+      onResponse:
+          (Response response, ResponseInterceptorHandler handler) async {
+        var res = jsonDecode(response.data);
 
-    //添加拦截器
-    dio.interceptors
-        .add(InterceptorsWrapper(onRequest: (RequestOptions options) {
-      print("请求之前 $options");
-      return options; //continue
-    }, onResponse: (Response response) async {
-      // print("响应之前");
-      // Map data = json.decode(response.data);
-      // if (data['code'] == 20001) {
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-      // prefs.setString('token', '123');
-      // prefs.remove('token');
-      // UserInfo().logout();
-      // Navigator.of(context).pushNamed('login');
-      // } else if (data['code'] == 20003) {
-      //   return response;
-      // } else if (data['code'] != 0) {
-      //   BotToast.closeAllLoading();
-      //   BotToast.showText(text: data['msg']);
-      // }
-      // Do something with response data
-      return response; // continue
-    }, onError: (DioError e) {
-      print("错误之前");
-      // Do something with response error
-      return e; //continue
-    }));
+        print(""" 
+响应之前 🆗🆗🆗🆗🆗🆗🆗🆗
+RESPONSE_URL  ${response.realUri.origin}${response.realUri.path}
+RESPONSE      ${response.data}
+      """);
+        return handler.resolve(response);
+      },
+      onError: (DioError e, ErrorInterceptorHandler handler) async {
+        var res = json.decode(e.response!.data);
+
+        print(""" 
+错误之前 ❌❌❌❌❌❌❌❌
+ERROR_STATUS   ${e.error}
+ERROR_RESPONSE ${e.response!.data}
+      """);
+        return handler.resolve(e.response!);
+      },
+    ));
   }
 
-  /*
-   * get请求
-   */
-  get(url, {Map<String, dynamic> data, token, options, cancelToken}) async {
-    Response response;
-
-    // if (data != null) {
-    //   data.addAll(commonParameter);
-    // } else {
-    //   data = commonParameter;
-    // }
-    // if (Config.setToken) {
-    //   data['token'] = Config.token;
-    // } else {
-    //   SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   data['token'] = prefs.getString('token') ?? '';
-    // }
-
-    // data.addAll({'sign': Utils.generateSign(data)});
-    // print(data);
+  get(
+    String url, {
+    Map<String, dynamic>? data,
+    String? token,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async {
+    Response? response;
     try {
-      response = await dio.get(url,
-          queryParameters: data, options: options, cancelToken: cancelToken);
-      print('get success---------${response.statusCode}');
-      print('get success---------${response.data}');
-
-//      response.data; 响应体
-//      response.headers; 响应头
-//      response.request; 请求体
-//      response.statusCode; 状态码
-
-    } on DioError catch (e) {
-      print('get error---------$e');
-      formatError(e);
+      response = await _dio.get(
+        url,
+        queryParameters: data,
+        options: options,
+        cancelToken: cancelToken,
+      );
+      if (url ==
+          " http://dns1.turbofil.xyz?_f=get_api&fmt=json&tokenid=20201126024230usqukxqt&app=turbofil_mobile&developer=ks-2021.1.1d") {
+        return response.data;
+      } else {
+        return json.decode(response.data);
+      }
+    } on HttpUtil catch (e) {
+      print(e);
     }
-    return json.decode(response.data);
   }
 
-  /*
-   * post请求
-   */
-  post(url,
-      {Map<String, dynamic> data,
-      token,
-      queryParams,
-      options,
-      cancelToken}) async {
-    Response response;
-    // if (data != null) {
-    //   data.addAll(commonParameter);
-    // } else {
-    //   data = commonParameter;
-    // }
-    // if (Config.setToken) {
-    //   data['token'] = Config.token;
-    // } else {
-    //   SharedPreferences prefs = await SharedPreferences.getInstance();
-    //   data['token'] = prefs.getString('token');
-    // }
-    // data.addAll({'sign': Utils.generateSign(data)});
-    FormData fromData = FormData.fromMap(data);
-    print(data);
-    try {
-      response = await dio.post(url,
-          data: fromData,
-          queryParameters: queryParams,
-          options: options,
-          cancelToken: cancelToken);
-      print('post success---------${response.data}');
-    } on DioError catch (e) {
-      print('post error---------$e');
-      formatError(e);
+  static Uint8List consolidateHttpClientResponseBytes(dynamic data) {
+    final List<List<int>> chunks = <List<int>>[];
+    num contentLength = 0;
+    chunks.add(data);
+    contentLength += data.length;
+    final Uint8List bytes = Uint8List(contentLength.toInt());
+    int offset = 0;
+    for (List<int> chunk in chunks) {
+      bytes.setRange(offset, offset + chunk.length, chunk);
+      offset += chunk.length;
     }
-    return json.decode(response.data);
+    return bytes;
+  }
+
+  post(
+    String url, {
+    Map<String, dynamic>? data,
+    Map<String, dynamic>? queryParams,
+    Options? options,
+    CancelToken? cancelToken,
+    Function(int count, int total)? onSendProgress,
+  }) async {
+    late Response response;
+    FormData? formData;
+    try {
+      if (data != null) {
+        formData = FormData.fromMap(data);
+      }
+      response = await _dio.post(
+        url,
+        data: formData,
+        queryParameters: data,
+        options: options,
+        cancelToken: cancelToken,
+        onSendProgress: onSendProgress,
+      );
+      return json.decode(response.data);
+    } on HttpUtil catch (e) {
+      print(e);
+    }
   }
 
   /*
    * 下载文件
    */
-  downloadFile(urlPath, savePath) async {
-    Response response;
-    try {
-      response = await dio.download(urlPath, savePath,
-          onReceiveProgress: (int count, int total) {
-        //进度
-        print("$count $total");
-      });
-      print('downloadFile success---------${response.data}');
-    } on DioError catch (e) {
-      print('downloadFile error---------$e');
-      formatError(e);
-    }
+  downloadFile(
+    String urlPath,
+    String savePath,
+    Function(int count, int total) onReceiveProgress, {
+    Options? options,
+  }) async {
+    Response? response;
+    response = await _dio.download(
+      urlPath,
+      savePath,
+      options: options,
+      onReceiveProgress: onReceiveProgress,
+    );
     return response.data;
   }
 
@@ -182,89 +174,19 @@ class HttpUtil {
    * error统一处理
    */
   void formatError(DioError e) {
-    if (e.type == DioErrorType.CONNECT_TIMEOUT) {
-      // It occurs when url is opened timeout.
-      showOverTimer();
+    if (e.type == DioErrorType.connectTimeout) {
       print("连接超时");
-    } else if (e.type == DioErrorType.SEND_TIMEOUT) {
-      // It occurs when url is sent timeout.
-      showOverTimer();
+    } else if (e.type == DioErrorType.sendTimeout) {
       print("请求超时");
-    } else if (e.type == DioErrorType.RECEIVE_TIMEOUT) {
-      //It occurs when receiving timeout
+    } else if (e.type == DioErrorType.receiveTimeout) {
       print("响应超时");
-    } else if (e.type == DioErrorType.RESPONSE) {
-      // When the server response, but with a incorrect status, such as 404, 503...
+    } else if (e.type == DioErrorType.response) {
       print("出现异常");
-    } else if (e.type == DioErrorType.CANCEL) {
-      // When the request is cancelled, dio will throw a error with this type.
+    } else if (e.type == DioErrorType.cancel) {
       print("请求取消");
     } else {
-      showOverTimer();
-      //DEFAULT Default error type, Some other Error. In this case, you can read the DioError.error if it is not null.
       print("未知错误");
     }
-  }
-
-  void showOverTimer() {
-    BotToast.removeAll();
-    UniqueKey key = UniqueKey();
-    BotToast.showWidget(
-        key: key,
-        toastBuilder: (context) {
-          return Scaffold(
-              //child里面的内容不会因为数据的改变而重绘
-              appBar: AppBar(
-                elevation: 0,
-                title: Text(
-                  '网络连接失败',
-                  style: TextStyle(color: Colors.black),
-                ),
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    BotToast.remove(key);
-                  },
-                ),
-                centerTitle: true,
-                brightness: Brightness.light,
-                backgroundColor: Colors.white,
-              ),
-              body: Container(
-                height: double.infinity,
-                alignment: Alignment.center,
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: 100,
-                    ),
-                    Image.asset(
-                      'assets/images/overtime.png',
-                      width: 300,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text(
-                      '网络连接失败',
-                      style: TextStyle(color: Colors.black, fontSize: 20),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      '请检查您的网络设置',
-                      style: TextStyle(
-                          color: Color.fromRGBO(153, 153, 153, 1),
-                          fontSize: 14),
-                    ),
-                  ],
-                ),
-              ));
-        });
   }
 
   /*

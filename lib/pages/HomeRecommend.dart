@@ -3,14 +3,14 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:tang_ping/Widgets/SearchBox.dart';
 import 'package:tang_ping/utils/Http.dart';
 import 'package:tang_ping/utils/PlaceHolderImg_page.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class HomeRecommend extends StatefulWidget {
-  HomeRecommend({Key key, this.callback, this.porps}) : super(key: key);
+  HomeRecommend({Key? key, required this.callback, required this.porps})
+      : super(key: key);
   final Function callback;
   final Map porps;
   @override
@@ -22,8 +22,7 @@ class _HomeRecommendState extends State<HomeRecommend>
   EasyRefreshController _controller = EasyRefreshController();
   int _pageNum = 0;
   List _imgList = [];
-  int _imgCount;
-  SwiperController _swiperController = SwiperController();
+  late int _imgCount;
   @override
   bool get wantKeepAlive => true;
 
@@ -110,12 +109,13 @@ class _HomeRecommendState extends State<HomeRecommend>
                                         child: ImageWidgetPlaceholder(
                                           key: ValueKey(user['head_url']),
                                           imgUrl: user['head_url'],
-                                          width: 30,
+                                          width: 30.0,
                                           placeHolder: Container(
                                             width: 30,
                                             height: 30,
                                             color: Colors.black87,
                                           ),
+                                          fit: BoxFit.cover,
                                         )),
                                     SizedBox(
                                       width: 5,
@@ -138,30 +138,7 @@ class _HomeRecommendState extends State<HomeRecommend>
                               ],
                             ),
                           ),
-                          Container(
-                              height: 300,
-                              child: Swiper(
-                                loop: false,
-                                itemCount: item['pictures'].length,
-                                control: SwiperControl(color: Colors.white),
-                                controller: _swiperController,
-                                onIndexChanged: (i) {
-                                  print("I $i");
-                                  // widget.callback();
-                                },
-                                itemBuilder: (context, index) {
-                                  return ClipRRect(
-                                      borderRadius: BorderRadius.circular(5),
-                                      child: ImageWidgetPlaceholder(
-                                        fit: BoxFit.cover,
-                                        imgUrl:
-                                            '${item['pictures'][index]['img_src']}',
-                                        placeHolder: Container(
-                                          color: Colors.black12,
-                                        ),
-                                      ));
-                                },
-                              )),
+                          Container(height: 300, child: SizedBox()),
                           SizedBox(
                             height: 15,
                           ),

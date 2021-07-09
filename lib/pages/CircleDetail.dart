@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class CircleDetail extends StatefulWidget {
-  CircleDetail({Key key, this.props}) : super(key: key);
-  dynamic props = {};
+  final dynamic props;
+  CircleDetail({Key? key, this.props}) : super(key: key);
   @override
   _CircleDetailState createState() => _CircleDetailState();
 }
@@ -56,7 +56,7 @@ class _CircleDetailState extends State<CircleDetail> {
 }
 
 class UserInfoModel {
-  UserInfoModel({this.id, this.psw, this.name});
+  UserInfoModel({required this.id, required this.psw, required this.name});
   int id;
   String psw;
   String name;

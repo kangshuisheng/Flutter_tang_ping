@@ -13,7 +13,7 @@ import 'package:tang_ping/utils/TextColor.dart';
 import 'package:tang_ping/utils/TextStyleTransition.dart';
 
 class CirclesPage extends StatefulWidget {
-  CirclesPage({Key key}) : super(key: key);
+  CirclesPage({Key? key}) : super(key: key);
 
   @override
   _CirclesPageState createState() => _CirclesPageState();
@@ -21,11 +21,11 @@ class CirclesPage extends StatefulWidget {
 
 class _CirclesPageState extends State<CirclesPage> {
   int _pageNum = 0, _activeTab = 0;
-  EasyRefreshController _controller;
+  late EasyRefreshController _controller;
   List _imgList = [];
   int _totalCount = 0;
-  Map _firstCircleClassify;
-  List _circleClassify,
+  Map? _firstCircleClassify;
+  List? _circleClassify,
       _tabs = [
         '推荐',
         '热议活动',
@@ -51,7 +51,7 @@ class _CirclesPageState extends State<CirclesPage> {
       {'title': '每日口语', 'link': 'aaa'},
       {'title': '沙雕聚集地', 'link': 'aaa'},
     ];
-    _firstCircleClassify = _circleClassify.removeAt(0);
+    _firstCircleClassify = _circleClassify?.removeAt(0);
     super.initState();
   }
 
@@ -149,7 +149,7 @@ class _CirclesPageState extends State<CirclesPage> {
                       Container(
                         width: 50,
                         child: Column(
-                          children: [Text('${_firstCircleClassify['title']}')],
+                          children: [Text('${_firstCircleClassify?['title']}')],
                         ),
                       ),
                       Column(
@@ -157,7 +157,7 @@ class _CirclesPageState extends State<CirclesPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Image.network(
-                            '${_firstCircleClassify['icon']}',
+                            '${_firstCircleClassify?['icon']}',
                             width: 50,
                             fit: BoxFit.fitWidth,
                           )
@@ -174,8 +174,8 @@ class _CirclesPageState extends State<CirclesPage> {
                         childAspectRatio: 2.75,
                         mainAxisSpacing: 6,
                         crossAxisSpacing: 6),
-                    children: List.generate(_circleClassify.length, (i) {
-                      var item = _circleClassify[i];
+                    children: List.generate(_circleClassify!.length, (i) {
+                      var item = _circleClassify![i];
                       return Container(
                         decoration: BoxDecoration(
                             color: Colors.amberAccent,
@@ -201,7 +201,7 @@ class _CirclesPageState extends State<CirclesPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: List.generate(
-          _tabs.length,
+          _tabs!.length,
           (i) => GestureDetector(
                 onTap: () {
                   setState(() {
@@ -211,7 +211,7 @@ class _CirclesPageState extends State<CirclesPage> {
                 child: Container(
                     child: buildAnimatedDefaultTextStyle(
                         Text(
-                          '${_tabs[i]}',
+                          '${_tabs![i]}',
                         ),
                         _activeTab,
                         i)),

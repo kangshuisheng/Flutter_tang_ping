@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class MessagePage extends StatefulWidget {
-  MessagePage({Key key}) : super(key: key);
+  MessagePage({Key? key}) : super(key: key);
 
   @override
   _MessagePageState createState() => _MessagePageState();

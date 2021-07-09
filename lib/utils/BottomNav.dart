@@ -55,7 +55,7 @@ class BottomNavState extends State<BottomNav> {
                           begin: _currentIndex == i ? 20.0 : 10.0,
                           end: _currentIndex == i ? 25.0 : 22.0),
                       duration: Duration(milliseconds: 300),
-                      builder: (context, value, child) => Container(
+                      builder: (context, double value, child) => Container(
                         height: 50,
                         width: 50,
                         child: Column(

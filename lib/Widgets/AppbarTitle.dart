@@ -5,7 +5,11 @@ class AppbarTitle extends StatelessWidget {
   final Widget widget;
   final Function callback;
   final Icon icon;
-  const AppbarTitle({Key key, this.widget, this.callback, this.icon})
+  const AppbarTitle(
+      {Key? key,
+      required this.widget,
+      required this.callback,
+      required this.icon})
       : super(key: key);
 
   @override

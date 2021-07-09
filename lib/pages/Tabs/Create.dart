@@ -4,7 +4,7 @@ import 'package:tang_ping/utils/AnimationRoute.dart';
 import 'package:tang_ping/utils/TextColor.dart';
 
 class CreatePage extends StatefulWidget {
-  CreatePage({Key key}) : super(key: key);
+  CreatePage({Key? key}) : super(key: key);
 
   @override
   _CreatePageState createState() => _CreatePageState();
